@@ -1,7 +1,7 @@
 import User from "../modules/user.module.js";
 import bcrypt from "bcrypt";
 
-export const signUp = async (req, res) => {
+export const signUp = async (req, res,next) => {
   const { username, email, password } = req.body;
   try {
     const saltRounds = 10;
@@ -10,8 +10,10 @@ export const signUp = async (req, res) => {
     const newUser = new User({ username, email, password: hasedPassword });
     await newUser
       .save()
-      .then(() => res.status(200).json("User added Successfully!"));
+      .then(() => res.status(200).json("User added Successfully!✅"));
   } catch (error) {
-    res.status(400).json(`User Registration Failed ${error.message}`);
+    const err = new Error(`User Registration Failed ❌: ${error.message}`);
+    err.status = 400;
+    next(err);
   }
 };
